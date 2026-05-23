@@ -3,8 +3,11 @@ import joblib
 import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+import nltk
 st.set_page_config(page_title="Spam Detection", page_icon="📩")
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('punkt')
 
 @st.cache_resource
 def load_model():
