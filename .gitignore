@@ -1,6 +1,5 @@
 # Model files (generate locally by running the notebook)
-spam_model.joblib
-tfidf_vectorizer.joblib
+
 
 # Python
 __pycache__/
