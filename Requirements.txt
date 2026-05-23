@@ -6,3 +6,4 @@ nltk
 joblib
 contractions
 matplotlib
+joblib
