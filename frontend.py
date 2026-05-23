@@ -1,24 +1,24 @@
 import streamlit as st
 import joblib
 import re
+import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import nltk
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('punkt')
+
 st.set_page_config(page_title="Spam Detection", page_icon="📩")
 
 @st.cache_resource
-def load_model():
+def setup():
+    nltk.download('stopwords', quiet=True)
+    nltk.download('wordnet', quiet=True)
+    nltk.download('punkt', quiet=True)
     model = joblib.load("spam_model.joblib")
     tfidf = joblib.load("tfidf_vectorizer.joblib")
-    return model, tfidf
+    lemmatizer = WordNetLemmatizer()
+    stop_words = set(stopwords.words("english"))
+    return model, tfidf, lemmatizer, stop_words
 
-model, tfidf = load_model()
-
-lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words("english"))
+model, tfidf, lemmatizer, stop_words = setup()
 
 def cleaning_text_data(text):
     if isinstance(text, list):
@@ -27,8 +27,8 @@ def cleaning_text_data(text):
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text)
     words = text.split()
-    words = [word for word in words if word not in stop_words]      
-    words = [lemmatizer.lemmatize(word) for word in words]          
+    words = [word for word in words if word not in stop_words]
+    words = [lemmatizer.lemmatize(word) for word in words]
     return " ".join(words).strip()
 
 st.title("📩 SMS Spam Detection App")
@@ -46,9 +46,9 @@ if st.button("Predict"):
             vector_input = tfidf.transform([clean_msg])
             prediction = model.predict(vector_input)[0]
             if prediction == 1:
-                st.error(f"{single_msg} -> Spam")
+                st.error(f"{single_msg} --> Spam")
             else:
-                st.success(f"{single_msg} -> Not Spam")
+                st.success(f"{single_msg} --> Not Spam")
 
 st.markdown("---")
 st.markdown("# *:rainbow[*Made with love by* **Sarthak Jain**]* ")
